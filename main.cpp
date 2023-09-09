@@ -59,20 +59,20 @@ void fillAndPrintMatrix(Fruit matrix[][5], int numRows, int numCols) {
 }
 
 // Function to check for wins on a single line
-int checkLine(Fruit matrix[][5], int numRows, int numCols, int lineNum) {
-    Fruit currentFruit = matrix[lineNum][0];
+int checkLine(Fruit matrix[][5], int numRows, int numCols, int curRow) {
+    Fruit currentFruit = matrix[curRow][0];
     int consecutiveCount = 1;
     int maxConsecutiveCount = 1;
     int totalPoints = 0;
 
     for (int j = 1; j < numCols; j++) {
-        if (matrix[lineNum][j] == currentFruit) {
+        if (matrix[curRow][j] == currentFruit) {
             consecutiveCount++;
             if (consecutiveCount > maxConsecutiveCount) {
                 maxConsecutiveCount = consecutiveCount;
             }
         } else {
-            currentFruit = matrix[lineNum][j];
+            currentFruit = matrix[curRow][j];
             consecutiveCount = 1;
         }
     }
@@ -80,7 +80,7 @@ int checkLine(Fruit matrix[][5], int numRows, int numCols, int lineNum) {
     if (maxConsecutiveCount >= 3) {
         int winPoints = getPoints(currentFruit, maxConsecutiveCount);
         totalPoints += winPoints;
-        cout << "Line " << lineNum + 1 << ":" << endl;
+        cout << "Line " << curRow + 1 << ":" << endl;
         cout << "Figure: " << fruitToChar(currentFruit) << endl;
         cout << "Win: " << winPoints << "p" << endl;
         cout << "Figures: " << maxConsecutiveCount << endl;
@@ -101,8 +101,8 @@ int main() {
 
     // Check for wins on each row
     int totalWon = 0;
-    for (int i = 0; i < numRows; i++) {
-        totalWon += checkLine(matrix, numRows, numCols, i);
+    for (int curRow = 0; curRow < numRows; curRow++) {
+        totalWon += checkLine(matrix, numRows, numCols, curRow);
     }
 
     if (totalWon == 0) {
