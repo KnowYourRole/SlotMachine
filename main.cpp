@@ -89,6 +89,66 @@ int checkLine(Fruit matrix[][5], int numRows, int numCols, int curRow) {
     return totalPoints;
 }
 
+// Function to check for wins on a V line
+int checkLineVStyle(Fruit matrix[][5], int numRows, int numCols, int startRow) {
+    int totalPoints = 0;
+
+    Fruit currentFruit = matrix[startRow][0];
+    int consecutiveCount = 1;
+    int maxConsecutiveCount = 1;
+    
+    bool goDown = (startRow == 0);  // Start from the top or bottom based on startRow
+
+    // Skip the first fruit if startRow is strictly less than the boundary
+    if (startRow == 0) {
+        startRow++;
+    }
+    else {
+        startRow--;
+    }
+
+    int startCol = 1;  // Always start from the second column
+
+    while (startRow < numRows && startCol < numCols) {
+        if (matrix[startRow][startCol] == currentFruit) {
+            consecutiveCount++;
+            if (consecutiveCount > maxConsecutiveCount) {
+                maxConsecutiveCount = consecutiveCount;
+            }
+        } else {
+            currentFruit = matrix[startRow][startCol];
+            consecutiveCount = 1;
+        }
+
+        if (goDown) {
+            startRow++;
+            if (startRow == numRows) {
+                goDown = false;
+                startRow = numRows - 2;
+            }
+        } else {
+            startRow--;
+            if (startRow < 0) {
+                goDown = true;
+                startRow = 1;
+            }
+        }
+
+        startCol++;  // Move to the next column
+    }
+
+    if (maxConsecutiveCount >= 3) {
+        int winPoints = getPoints(currentFruit, maxConsecutiveCount);
+        totalPoints += winPoints;
+        cout << "Diagonal " << (startRow == 0 ? startCol : numRows - 1 - startCol) << ":" << endl;
+        cout << "Figure: " << fruitToChar(currentFruit) << endl;
+        cout << "Win: " << winPoints << "p" << endl;
+        cout << "Figures: " << maxConsecutiveCount << endl;
+    }
+
+    return totalPoints;
+}
+
 int main() {
     srand(static_cast<unsigned int>(time(nullptr))); // Seed the random number generator
 
@@ -105,6 +165,9 @@ int main() {
         totalWon += checkLine(matrix, numRows, numCols, curRow);
     }
 
+    totalWon += checkLineVStyle(matrix, numRows, numCols, 0);
+    totalWon += checkLineVStyle(matrix, numRows, numCols, numRows-1);
+
     if (totalWon == 0) {
         cout << "Better luck next time!" << endl;
     } else {
@@ -113,3 +176,4 @@ int main() {
 
     return 0;
 }
+
