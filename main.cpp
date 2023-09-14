@@ -21,6 +21,19 @@ char fruitToChar(Fruit fruit) {
     }
 }
 
+// Function to convert a Fruit enum to its corresponding string name
+string fruitToString(Fruit fruit) {
+    switch (fruit) {
+        case Fruit::CHERRY: return "Cherry";
+        case Fruit::ORANGE: return "Orange";
+        case Fruit::LEMON: return "Lemon";
+        case Fruit::PLUM: return "Plum";
+        case Fruit::WATERMELON: return "Watermelon";
+        case Fruit::GRAPE: return "Grape";
+        default: return "Unknown";
+    }
+}
+
 // Function to generate a random fruit
 Fruit getRandomFruit() {
     int random = rand() % 6;
@@ -93,7 +106,7 @@ int checkLineDirection(Fruit matrix[][5], int numRows, int numCols, int curRow, 
         int winPoints = getPoints(winningFruit, maxConsecutiveCount);
         totalPoints += winPoints;
         cout << "Line " << lineNum << ":" << endl;
-        cout << "Figure: " << fruitToChar(winningFruit) << endl;
+        cout << "Figure: " << fruitToString(winningFruit) << endl;
         cout << "Win: " << winPoints << "p" << endl;
         cout << "Figures: " << maxConsecutiveCount << endl << endl;
     }
@@ -179,7 +192,7 @@ int checkLineVDirection(Fruit matrix[][5], int numRows, int numCols, int startRo
         int winPoints = getPoints(winningFruit, maxConsecutiveCount);
         totalPoints += winPoints;
         cout << "Diagonal " << (isDiag4 == true ? 4 : 5) << ":" << endl;
-        cout << "Figure: " << fruitToChar(winningFruit) << endl;
+        cout << "Figure: " << fruitToString(winningFruit) << endl;
         cout << "Win: " << winPoints << "p" << endl;
         cout << "Figures: " << maxConsecutiveCount << endl << endl;
     }
@@ -254,7 +267,7 @@ int checkLineWDirection(Fruit matrix[][5], int numRows, int numCols, int startCo
         int winPoints = getPoints(winningFruit, maxConsecutiveCount);
         totalPoints += winPoints;
         cout << "Diagonal " << (goRight ? 7 : 8) << ":" << endl;
-        cout << "Figure: " << fruitToChar(winningFruit) << endl;
+        cout << "Figure: " << fruitToString(winningFruit) << endl;
         cout << "Win: " << winPoints << "p" << endl;
         cout << "Figures: " << maxConsecutiveCount << endl << endl;
     }
