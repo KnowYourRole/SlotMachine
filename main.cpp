@@ -59,29 +59,24 @@ void fillAndPrintMatrix(Fruit matrix[][5], int numRows, int numCols) {
     cout << endl;
 }
 
-// Function to check for wins on a single line
-int checkLine(Fruit matrix[][5], int numRows, int numCols, int curRow) {
-    Fruit currentFruit = matrix[curRow][0];
+// Function to check for wins in a specific direction (left or right)
+int checkLineDirection(Fruit matrix[][5], int numRows, int numCols, int curRow, int startCol, int colStep) {
+    Fruit currentFruit = matrix[curRow][startCol];
     Fruit winningFruit;
     int consecutiveCount = 1;
     int maxConsecutiveCount = 1;
     int totalPoints = 0;
 
     int lineNum;
-    if(curRow == 0)
-    {
+    if (curRow == 0) {
         lineNum = 2;
-    }
-    else if(curRow == 1)
-    {
+    } else if (curRow == 1) {
         lineNum = 1;
-    }
-    else
-    {
+    } else {
         lineNum = 3;
     }
 
-    for (int j = 1; j < numCols; j++) {
+    for (int j = startCol + colStep; j >= 0 && j < numCols; j += colStep) {
         if (matrix[curRow][j] == currentFruit) {
             consecutiveCount++;
             if (consecutiveCount > maxConsecutiveCount) {
@@ -106,12 +101,28 @@ int checkLine(Fruit matrix[][5], int numRows, int numCols, int curRow) {
     return totalPoints;
 }
 
-// Function to check for wins on a V line
-int checkLineVStyle(Fruit matrix[][5], int numRows, int numCols, int startRow) {
+// Function to check for wins on a single line
+int checkLine(Fruit matrix[][5], int numRows, int numCols, int curRow) {
+    int totalPoints = 0;
+    
+    // Check for wins left to right
+    totalPoints += checkLineDirection(matrix, numRows, numCols, curRow, 0, 1);
+
+    // Check for wins right to left
+    totalPoints += checkLineDirection(matrix, numRows, numCols, curRow, numCols - 1, -1);
+
+    return totalPoints;
+}
+
+
+
+
+// Function to check for wins in a specific vertical direction (upward or downward) and specific columns
+int checkLineVDirection(Fruit matrix[][5], int numRows, int numCols, int startRow, int startCol, int colStep) {
     bool isDiag4;
     int totalPoints = 0;
     Fruit winningFruit;
-    Fruit currentFruit = matrix[startRow][0];
+    Fruit currentFruit = matrix[startRow][startCol];
     int consecutiveCount = 1;
     int maxConsecutiveCount = 1;
     
@@ -126,10 +137,16 @@ int checkLineVStyle(Fruit matrix[][5], int numRows, int numCols, int startRow) {
         startRow--;
         isDiag4 = false;
     }
+    if(startCol == 0)
+    {
+        startCol++;
+    }
+    else if(startCol == numCols - 1)
+    {
+        startCol--;
+    }
 
-    int startCol = 1;  // Always start from the second column
-
-    while (startRow < numRows && startCol < numCols) {
+    while (startRow >= 0 && startRow < numRows && startCol >= 0 && startCol < numCols) {
         if (matrix[startRow][startCol] == currentFruit) {
             consecutiveCount++;
             if (consecutiveCount > maxConsecutiveCount) {
@@ -155,7 +172,7 @@ int checkLineVStyle(Fruit matrix[][5], int numRows, int numCols, int startRow) {
             }
         }
 
-        startCol++;  // Move to the next column
+        startCol += colStep;  // Move to the next column
     }
 
     if (maxConsecutiveCount >= 3) {
@@ -170,19 +187,47 @@ int checkLineVStyle(Fruit matrix[][5], int numRows, int numCols, int startRow) {
     return totalPoints;
 }
 
-int checkLineWStyle(Fruit matrix[][5], int numRows, int numCols) {
-    int totalPoints = 0;    
-    int consecutiveCount = 1;
-    int maxConsecutiveCount = 1;    
-    bool goDown = true;  // Start from the top or bottom based on startRow
+// Function to check for wins on a V line in both directions, starting from the last column towards the first
+int checkLineVStyle(Fruit matrix[][5], int numRows, int numCols, int startRow) {
+    int totalPoints = 0;
     
-    int startRow = numRows - 2;
-    Fruit currentFruit = matrix[startRow][0];
-    Fruit winningFruit;
-    int startCol = 1;  // Always start from the second column
-    startRow++;
+    // Check for wins downward, starting from the last column towards the first
+    totalPoints += checkLineVDirection(matrix, numRows, numCols, startRow, 0, 1);
 
-    while (startRow < numRows && startCol < numCols) {
+    // Check for wins upward, starting from the last column towards the first
+    totalPoints += checkLineVDirection(matrix, numRows, numCols, startRow, numCols - 1, -1);
+
+    return totalPoints;
+}
+
+
+// Function to check for wins in a specific horizontal direction (left or right) and specific rows
+int checkLineWDirection(Fruit matrix[][5], int numRows, int numCols, int startCol, int startRow, int rowStep) {
+    int totalPoints = 0;
+    Fruit winningFruit;
+    Fruit currentFruit = matrix[startRow][startCol];
+    int consecutiveCount = 1;
+    int maxConsecutiveCount = 1;
+    
+    bool goRight = (startCol == 0);  // Start from the left or right based on startCol
+
+    // Skip the first fruit if startCol is strictly less than the boundary
+    if (startCol == 0) {
+        startCol++;
+    }
+    else {
+        startCol--;
+    }
+    if(startRow == numRows - 2)
+    {
+        startRow++;
+    }
+    else    //in case we deside to change the size of our matrix (currently wound't be called)
+    {
+        startRow--;
+    }
+
+    while (startRow >= 0 && startRow < numRows && startCol >= 0 && startCol < numCols) {
         if (matrix[startRow][startCol] == currentFruit) {
             consecutiveCount++;
             if (consecutiveCount > maxConsecutiveCount) {
@@ -194,27 +239,39 @@ int checkLineWStyle(Fruit matrix[][5], int numRows, int numCols) {
             consecutiveCount = 1;
         }
 
-        if (goDown) {
-            startRow--;            
-            goDown = false;
-        } 
+        if (goRight)
+            startCol++;
         else 
-        {
-            startRow++;
-            goDown = true;
-        }
+            startCol--;
 
-        startCol++;  // Move to the next column
+        if (startRow >= numRows-1) 
+            startRow = numRows - 2;
+        else if (startRow <= numRows-2) 
+            startRow = numRows - 1;
     }
 
     if (maxConsecutiveCount >= 3) {
         int winPoints = getPoints(winningFruit, maxConsecutiveCount);
         totalPoints += winPoints;
-        cout << "Diagonal " << 6 << ":" << endl;
+        cout << "Diagonal " << (goRight ? 7 : 8) << ":" << endl;
         cout << "Figure: " << fruitToChar(winningFruit) << endl;
         cout << "Win: " << winPoints << "p" << endl;
         cout << "Figures: " << maxConsecutiveCount << endl << endl;
     }
+
+    return totalPoints;
+}
+
+
+// Function to check for wins on a W line in both directions, starting from the first row towards the last
+int checkLineWStyle(Fruit matrix[][5], int numRows, int numCols) {
+    int totalPoints = 0;
+    
+    // Check for wins rightward, starting from the first row towards the last
+    totalPoints += checkLineWDirection(matrix, numRows, numCols, 0, numRows - 2, 1);
+
+    // Check for wins leftward, starting from the first row towards the last
+    totalPoints += checkLineWDirection(matrix, numRows, numCols, numCols - 1, numRows - 2, -1);
 
     return totalPoints;
 }
@@ -247,4 +304,3 @@ int main() {
 
     return 0;
 }
-
