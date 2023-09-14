@@ -2,6 +2,8 @@
 #include <vector>
 #include <ctime>
 #include <cstdlib>
+#include <chrono>
+#include <thread>
 
 using namespace std;
 
@@ -60,12 +62,19 @@ int getPoints(Fruit fruit, int consecutiveCount) {
     }
 }
 
-// Function to fill the matrix with random fruits and print it
+// Function to fill the matrix with random fruits and print it with delays
 void fillAndPrintMatrix(Fruit matrix[][5], int numRows, int numCols) {
+    const int delayMilliseconds = 200;  // Adjust this value for the delay duration
+
     for (int i = 0; i < numRows; i++) {
         for (int j = 0; j < numCols; j++) {
             matrix[i][j] = getRandomFruit();
+
+            // Introduce a delay before printing each character
+            std::this_thread::sleep_for(std::chrono::milliseconds(delayMilliseconds));
+
             cout << fruitToChar(matrix[i][j]) << " ";
+            cout.flush();  // Flush the output to make it appear immediately
         }
         cout << endl;
     }
@@ -266,7 +275,7 @@ int checkLineWDirection(Fruit matrix[][5], int numRows, int numCols, int startCo
     if (maxConsecutiveCount >= 3) {
         int winPoints = getPoints(winningFruit, maxConsecutiveCount);
         totalPoints += winPoints;
-        cout << "Diagonal " << (goRight ? 7 : 8) << ":" << endl;
+        cout << "Diagonal " << 6 << ":" << endl;
         cout << "Figure: " << fruitToString(winningFruit) << endl;
         cout << "Win: " << winPoints << "p" << endl;
         cout << "Figures: " << maxConsecutiveCount << endl << endl;
